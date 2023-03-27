@@ -4,8 +4,8 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("file", help="indicate the file to count the number of words and lines", type=str)
-    parser.add_argument("-a", "--average", help="print the average length of words in the file", action="store_true")
+    parser.add_argument("file", help="indicate the file to count the number of words and lines", type=str)  # noqa E501
+    parser.add_argument("-a", "--average", help="print the average length of words in the file", action="store_true")  # noqa E501
     args = parser.parse_args()
 
     try:
@@ -21,7 +21,7 @@ def main():
             print("The file has {} lines and {} words".format(len(lines), words))
             if args.average:
                 average_word_length = total_word_length / words
-                print("The average length of words in the file is {:.2f}".format(average_word_length))
+                print("The average length of words in the file is {:.2f}".format(average_word_length))  # noqa E501
     except FileNotFoundError:
         with open("errors.log", "a") as error_file:
             error_file.write("The file {} does not exist\n".format(args.file))
