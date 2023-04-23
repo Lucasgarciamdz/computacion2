@@ -1,0 +1,9 @@
+En el mundo de la programación,
+Python es un lenguaje popular,
+Pero si quieres un mayor control,
+Bajo nivel es la elección ideal.
+
+Su sintaxis es elegante y simple,
+Python es fácil de aprender,
+Pero si quieres más velocidad,
+Bajo nivel es lo que debes conocer.

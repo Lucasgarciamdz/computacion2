@@ -27,6 +27,11 @@ def main():
             error_file.write("The file {} does not exist\n".format(args.file))
         sys.stderr.write("The file {} does not exist\n".format(args.file))
         sys.exit(1)
+    except argparse.ArgumentError:
+        with open("errors.log", "a") as error_file:
+            error_file.write("the following arguments are required: file")
+        sys.stderr.write("the following arguments are required: file")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
