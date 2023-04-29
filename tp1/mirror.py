@@ -11,11 +11,20 @@ def mirror_text():
     parser.add_argument("-f", help="ruta al archivo para ser espejado", type=str, required=True)
     args = parser.parse_args()
 
-    if not os.path.exists(args.f) or not os.access(args.f, os.R_OK):
-        raise FileNotFoundError(f"No se pudo abrir el archivo: {args.f}")
+    if not args.f:
+        print("Debe especificar un archivo de texto con el argumento -f")
+        exit(1)
 
-    with open(args.f, "r") as archivo_original:
-        lineas = archivo_original.readlines()
+    if not os.access(args.f, os.R_OK):
+        print(f"No se puede acceder al archivo {args.f}")
+        exit(1)
+
+    try:
+        with open(args.f, "r") as archivo_original:
+            lineas = archivo_original.readlines()
+    except (PermissionError, IOError) as e:
+        print(f"Error al abrir el archivo: {e}")
+        exit(1)
 
     largo_linea = []
     for linea in lineas:
@@ -33,6 +42,9 @@ def mirror_text():
             linea = linea + "   |   " + linea[::-1] + "\n"
             os.write(hijo_write, linea.encode())
             exit()
+
+    for _ in range(len(lineas)):
+        os.wait()
 
     linea = os.read(padre_read, 2024).decode()
     print(linea)
