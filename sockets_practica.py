@@ -1,21 +1,17 @@
 import socket
 
-
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 s.bind(("0.0.0.0", 50011))
+s.listen(1)
 
-s.listen(5)
+while True:
+    conn, addr = s.accept()
+    print(f"New connection from {addr}")
 
-conn, addr = s.accept()
-
-
-if __name__ == "__main__":
     while True:
         data = conn.recv(1024)
-        if not data:
+        if data == b"chau":
+            print(f"Connection closed by {addr}")
+            conn.close()
             break
-        print("Recibido:", data.decode())
-        conn.send(data)
-    conn.close()
-    s.close()
+        print(f"Received data from {addr}: {data}")
