@@ -1,14 +1,13 @@
 # COMPUTACION II
 
-
 ## TP2
 
 Fecha de entrega: 14/11/2023
 
-
 ### Problema
 
 #### A
+
 Es necesario procesar imágenes con python, utilizando bibliotecas de procesamiento de imágenes.
 Las imágenes deen enviarse a un servidor HTTP concurrente para poder procesarlas y devolverlas al cliente.
 El servidor debe crear un hijo que implemente un servicio no concurrente que convierta las imágenes enviadas del cliente a imágenes en escala de grises.
@@ -17,11 +16,12 @@ El servidor HTTP deberá bloquearse a la espera de la finalización de la conver
 El servidor HTTP debe enviar la imagen procesada al cliente y terminar la conexión.
 
 #### B
+
 El servidor debe comunicarse con otro servidor en el mismo host. Este segundo servidor debe reducir el tamaño de la imagen un factor de escala dado por el primer servidor
 
 #### C
-Los servicios del servidor de escalado debe ser accesible desde el cliente vía el primer servidor.
 
+Los servicios del servidor de escalado debe ser accesible desde el cliente vía el primer servidor.
 
 ### Requerimientos
 
@@ -34,6 +34,7 @@ Los servicios del servidor de escalado debe ser accesible desde el cliente vía 
 #### Ejemplo modo de uso
 
 ~~~~~~~~~~~~~~~~~~~
+
 $ ./tp2.py -h
 usage: tp2..py [-h] -i IP -p PORT
 
@@ -60,4 +61,3 @@ https://www.rfc-editor.org/rfc/rfc1867
 
 ### Bonus Track
 El servidor debe poder atender requerimientos HTTPS
-

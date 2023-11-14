@@ -4,7 +4,7 @@ import socket
 import multiprocessing as mp
 from image_proccessing import black_and_white
 import asyncio
-from iterm2_tools import images
+import os
 
 
 def process_image(image_url, conn):
@@ -17,6 +17,18 @@ def process_image(image_url, conn):
     conn.close()
 
 
+def send_image(conn, image_path):
+    if os.path.isfile(image_path):
+        with open(image_path, 'rb') as img:
+            while True:
+                data = img.read(1024)
+                if not data:
+                    break
+                conn.sendall(data)
+    else:
+        logging.error(f"Image not found: {image_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="main server")
     parser.add_argument("-p", "--port", type=int, default=8080, help="port")
@@ -26,7 +38,8 @@ def main():
 
     logging.basicConfig(level=logging.INFO)
 
-    server_socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    server_family = socket.AF_INET6 if ":" in args.ip else socket.AF_INET
+    server_socket = socket.socket(server_family, socket.SOCK_STREAM)
 
     server_socket.bind((args.ip, args.port))
     server_socket.listen(1)
@@ -35,34 +48,25 @@ def main():
 
     while True:
         logging.info("Waiting for connection")
-        client_socket = server_socket.accept()
-        conn, addr = client_socket
-        logging.info(f"Connection from {conn}:{addr}")
+        client_socket, addr = server_socket.accept()
+        logging.info(f"Connection from {addr}")
 
-        conn.send("Connected".encode())
+        client_socket.send("Connected".encode())
 
         try:
-            try:
-                images.display_image_file(args.image)
-            except Exception as e:
-                logging.error(f"Error displaying image: {e}")
-            conn.send("Processing your image".encode())
+            client_socket.send("\nProcessing your image".encode())
             parent_conn, child_conn = mp.Pipe()
             son = mp.Process(target=process_image, args=(args.image, child_conn))
             son.start()
-            image_bw, image_path = parent_conn.recv()
-            try:
-                images.display_image_file(image_bw)
-            except Exception as e:
-                logging.error(f"Error displaying image: {e}")
+            image_path = parent_conn.recv()
             son.join()
-            conn.send("Image processing finished".encode())
-            conn.send(image_path.encode())
+            client_socket.send("\nImage processing finished\n".encode())
+            send_image(client_socket, image_path)
         except Exception as e:
             logging.error(f"Error processing image: {e}")
-            conn.send(f"Error processing image: {e}".encode())
+            client_socket.send(f"Error processing image: {e}".encode())
         finally:
-            conn.close()
+            client_socket.close()
 
 
 if __name__ == '__main__':
