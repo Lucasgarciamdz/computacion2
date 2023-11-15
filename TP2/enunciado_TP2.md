@@ -27,13 +27,12 @@ Los servicios del servidor de escalado debe ser accesible desde el cliente vía 
 
 * La aplicación debe contener como mínimo 3 funciones.
 * El servidor HTTP debe poder atender requerimientos ipv4 e ipv6 indistintamente.
-* Debe procesar opciones con getopt (agregar una opcion de ayuda) o con argparse. 
+* Debe procesar opciones con getopt (agregar una opcion de ayuda) o con argparse.
 * Debe manejar los errores.
 
-
 #### Ejemplo modo de uso
-
-~~~~~~~~~~~~~~~~~~~
+  
+  ```bash
 
 $ ./tp2.py -h
 usage: tp2..py [-h] -i IP -p PORT
@@ -45,7 +44,7 @@ optional arguments:
   -i IP, --ip IP Direccion de escucha
   -p PORT, --port PORT  Puerto de escucha
 
-
+```
 
 ### Objetivos
 
@@ -56,8 +55,10 @@ optional arguments:
 * Uso de mecanismos de Socket.
 
 ### Referencias
+
 File Upload in HTML
-https://www.rfc-editor.org/rfc/rfc1867
+<https://www.rfc-editor.org/rfc/rfc1867>
 
 ### Bonus Track
+
 El servidor debe poder atender requerimientos HTTPS

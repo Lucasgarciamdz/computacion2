@@ -1,38 +1,66 @@
-import socket
-import argparse
+import requests
+import logging
+import subprocess
+import platform
+import os
+
+logging.basicConfig(level=logging.INFO)
 
 
-def receive_image(client_socket, image_path):
-    with open(image_path, 'wb') as img:
-        while True:
-            try:
-                data = client_socket.recv(1024)
-                if not data:
-                    break
-                img.write(data)
-            except socket.error:
-                break
+def open_image(image_path):
+    if platform.system() == 'Darwin':       # macOS
+        subprocess.call(('open', image_path))
+    elif platform.system() == 'Windows':    # Windows
+        os.startfile(image_path)
+    else:                                   # linux variants
+        subprocess.call(('xdg-open', image_path))
 
 
-def receive_message(client_socket):
-    message = client_socket.recv(1024).decode()
-    print(message)
+def ipv4_client():
+    logging.info('Starting IPv4 client')
+    server_address = '127.0.0.1'
+    server_port = 8080
+
+    with open('./test.jpeg', 'rb') as img:
+        img_data = img.read()
+
+    logging.info('\nSending POST request to IPv4 server')
+    response = requests.post(f'http://{server_address}:{server_port}', data=img_data)
+
+    if response.status_code == 200:
+        image_path = 'processed_image_ipv4.jpeg'
+        with open(image_path, 'wb') as img:
+            img.write(response.content)
+        logging.info('\nReceived processed image from IPv4 server\n\n')
+        open_image(image_path)
+    else:
+        logging.error(f"IPv4 Error: {response.status_code}, {response.text}")
+
+
+def ipv6_client():
+    logging.info('Starting IPv6 client')
+    server_address = '[::1]'
+    server_port = 8080
+
+    with open('./test.jpeg', 'rb') as img:
+        img_data = img.read()
+
+    logging.info('\nSending POST request to IPv6 server')
+    response = requests.post(f'http://{server_address}:{server_port}', data=img_data)
+
+    if response.status_code == 200:
+        image_path = 'processed_image_ipv6.jpeg'
+        with open(image_path, 'wb') as img:
+            img.write(response.content)
+        logging.info('\nReceived processed image from IPv6 server\n\n')
+        open_image(image_path)
+    else:
+        logging.error(f"IPv6 Error: {response.status_code}, {response.text}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Client")
-    parser.add_argument("-p", "--port", type=int, default=8080, help="Server port")
-    parser.add_argument("-i", "--ip", type=str, default="localhost", help="Server IP")
-    parser.add_argument("-im", "--image", type=str, default="./test.jpeg", help="Image path")
-    args = parser.parse_args()
-
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((args.ip, args.port))
-    receive_message(client_socket)  # Receive "Connected" message
-    receive_message(client_socket)  # Receive "Processing your image" message
-    receive_message(client_socket)  # Receive "Image processing finished" message
-    receive_image(client_socket, args.image)
-    client_socket.close()
+    ipv4_client()
+    ipv6_client()
 
 
 if __name__ == '__main__':
